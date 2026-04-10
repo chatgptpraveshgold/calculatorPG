@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Pravesh Gold – Auto Calculator</title>
+
+  <link rel="icon" type="image/png" href="/logo.png?v=2" />
+  <link rel="apple-touch-icon" href="/logo.png?v=2" />
+
+  <style>
+    :root{
+      --bg:#fbf8ef;
+      --card:#ffffff;
+      --border:#e7e2d6;
+      --accent:#f6e6a6;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius:18px;
+      --gold:#D4AF37;
+    }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+    body{margin:0;background:var(--bg);color:var(--text);}
+    .wrap{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:30px 12px;}
+    .card{
+      width:540px; max-width:95vw;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px 18px 18px;
+    }
+    .brand{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:10px;}
+    .brand img{width:240px;max-width:80%;height:auto;border-radius:12px;display:block;}
+    .subtitle{color:var(--muted);margin-top:-4px;font-size:14px}
+
+    .dateBox{
+      margin:14px 0 18px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+      background:#fffdf6;
+    }
+    .todayRow{text-align:center;font-size:14px;color:var(--text);font-weight:700;}
+    .todayRow span{color:var(--muted);font-weight:600;}
+
+    label{display:block;margin:14px 0 6px;font-weight:700}
+    select,input{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:15px;
+      outline:none;
+      background:#fff;
+    }
+    input[readonly]{background:#fbfbfb;color:#374151}
+
+    .row{display:none;}
+    .row.show{display:block;}
+
+    .tip{font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+    .fieldError{display:none;margin-top:6px;color:#b91c1c;font-size:12.5px}
+
+    .amount{
+      margin-top:16px;
+      background:var(--accent);
+      border-radius:14px;
+      padding:18px 14px;
+      text-align:center;
+    }
+    .amountLabel{
+      display:block;
+      font-size:14px;
+      font-weight:700;
+      color:#5b4a14;
+      margin-bottom:6px;
+    }
+    .amountValue{
+      display:block;
+      font-weight:900;
+      font-size:28px;
+      letter-spacing:.3px;
+      line-height:1.25;
+    }
+
+    .foot{
+      margin-top:14px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .note{
+      margin-top:8px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12.5px;
+    }
+
+    .statusMsg{
+      margin-top:8px;
+      text-align:center;
+      font-size:12.5px;
+      color:#b45309;
+      display:none;
+    }
+
+    .statusMsg.error{
+      color:#b91c1c;
+    }
+
+    .refreshRow{
+      margin-top:10px;
+      text-align:center;
+    }
+
+    .refreshLink{
+      cursor:pointer;
+      color:#1d4ed8;
+      text-decoration:underline;
+    }
+
+    @media (max-width: 640px){
+      .wrap{padding:18px 10px;}
+      .card{padding:18px 14px 16px;}
+      .brand img{width:200px;}
+      .amountValue{font-size:24px;}
+      label{font-size:14px;}
+      select,input{font-size:16px;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+
+      <div class="brand">
+        <img
+          src="https://res.cloudinary.com/pravesh/image/upload/v1767003600/pravesh-gold2462/docs/lkbhix4sg0nqbxudh781.jpg"
+          alt="Pravesh Gold Logo"
+        />
+        <div class="subtitle">Auto Calculator – Gold Ornaments</div>
+      </div>
+
+      <div class="dateBox">
+        <div class="todayRow" id="todayText"><span>Today:</span> —</div>
+      </div>
+
+      <div class="ratesBox">
+        <div class="note">Note: Gold rates change frequently.</div>
+        <div class="statusMsg" id="statusMsg"></div>
+        <div class="refreshRow">
+          <span class="refreshLink" id="refreshBtn" style="display:none;">Refresh rates</span>
+        </div>
+      </div>
+
+      <label for="karat">Select Karat</label>
+      <select id="karat">
+        <option value="22" selected>22KT</option>
+        <option value="24">24KT</option>
+        <option value="18">18KT</option>
+      </select>
+
+      <!-- 24K coin row (ONLY for 24K) -->
+      <div class="row" id="coinRow">
+        <label for="coin">24K Coin (grams)</label>
+        <select id="coin">
+          <option value="">Select</option>
+          <option value="1">1 g</option>
+          <option value="2">2 g</option>
+          <option value="5">5 g</option>
+          <option value="10">10 g</option>
+          <option value="20">20 g</option>
+          <option value="50">50 g</option>
+          <option value="100">100 g</option>
+        </select>
+        <div class="tip" id="coinTip" style="display:none;">
+          Gold coin calculation includes 3% making charges and 3% GST.
+        </div>
+      </div>
+
+      <!-- Weight row (ONLY for 22K/18K) -->
+      <div class="row" id="weightRow">
+        <label for="weight">Weight (grams)</label>
+        <input id="weight" type="text" inputmode="decimal" placeholder="e.g. 10.250" />
+        <div class="fieldError" id="weightError">
+          Invalid weight. Allowed: 0.001 – 999.999 (max 3 decimals).
+        </div>
+      </div>
+
+      <!-- Making row (ONLY for 22K/18K) -->
+      <div class="row" id="makingRow">
+        <label for="makingType">Making Type</label>
+        <select id="makingType">
+          <option value="classic" selected>Classic</option>
+          <option value="antique">Antique</option>
+          <option value="premium">Premium</option>
+          <option value="italian">Italian</option>
+        </select>
+      </div>
+
+      <div class="amount" id="amountBox">
+        <span class="amountLabel">Approx Price</span>
+        <span class="amountValue" id="amountValue">Enter weight to see price</span>
+      </div>
+
+      <div class="foot">
+        Prices shown are approximate. Final billing will be done at the showroom.<br/>
+        3% taxes included in above calculation.<br/>
+        Gold coins include 3% GST and 3% making charges.<br/>
+        Pravesh Gold, Kalyan West.
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  // Backend endpoint (now hidden via Vercel Function)
+  const API_ENDPOINT = "/api/calculate";
+
+  const el = (id) => document.getElementById(id);
+
+  const karat = el("karat");
+  const weight = el("weight");
+  const weightError = el("weightError");
+  const makingType = el("makingType");
+  const coin = el("coin");
+
+  const coinRow = el("coinRow");
+  const weightRow = el("weightRow");
+  const makingRow = el("makingRow");
+  const coinTip = el("coinTip");
+
+  const amountValue = el("amountValue");
+  const todayText = el("todayText");
+  const statusMsg = el("statusMsg");
+  const refreshBtn = el("refreshBtn");
+
+  function setStatus(msg, type = "warn") {
+    if (!msg) {
+      statusMsg.style.display = "none";
+      statusMsg.textContent = "";
+      statusMsg.classList.remove("error");
+      refreshBtn.style.display = "none";
+      return;
+    }
+    statusMsg.style.display = "block";
+    statusMsg.textContent = msg;
+    statusMsg.classList.toggle("error", type === "error");
+    refreshBtn.style.display = "inline";
+  }
+
+  async function updatePrice() {
+    const k = karat.value;
+    const wStr = weight.value.trim();
+    const cVal = coin.value;
+    const mt = makingType.value;
+
+    // Basic client-side validation before hitting API
+    if (k === "24") {
+      if (!cVal) {
+        amountValue.textContent = "Select coin weight to see price";
+        coinTip.style.display = "none";
+        return;
+      }
+    } else {
+      if (!wStr) {
+        amountValue.textContent = "Enter weight to see price";
+        showWeightError(false);
+        return;
+      }
+      if (!isValidWeightFinal(wStr)) {
+        amountValue.textContent = "Enter valid weight";
+        return;
+      }
+    }
+
+    try {
+      const res = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          karat: k,
+          weight: wStr,
+          makingType: mt,
+          coinGrams: cVal
+        })
+      });
+
+      if (!res.ok) throw new Error("API Error");
+      const data = await res.json();
+
+      if (data.error) throw new Error(data.error);
+
+      if (data.date) {
+        todayText.innerHTML = `<span>Today:</span> ${data.date}`;
+      }
+      
+      amountValue.textContent = data.displayPrice || "Calculation error";
+      if (k === "24") coinTip.style.display = "block";
+
+    } catch (e) {
+      console.error(e);
+      amountValue.textContent = "Price unavailable";
+      setStatus("Could not fetch current prices. Please refresh.", "error");
+    }
+  }
+
+  function handleKaratChange() {
+    const k = karat.value;
+    weight.value = "";
+    coin.value = "";
+    showWeightError(false);
+    coinTip.style.display = "none";
+
+    if (k === "24") {
+      coinRow.style.display = "block";
+      weightRow.style.display = "none";
+      makingRow.style.display = "none";
+      amountValue.textContent = "Select coin weight to see price";
+    } else {
+      coinRow.style.display = "none";
+      weightRow.style.display = "block";
+      makingRow.style.display = "block";
+      amountValue.textContent = "Enter weight to see price";
+    }
+  }
+
+  function isValidWeightFinal(s) {
+    if (!s) return false;
+    s = s.trim();
+    if (s.startsWith(".")) s = "0" + s;
+    const re = /^(?:\d{1,3})(?:\.\d{1,3})?$/;
+    if (!re.test(s)) return false;
+    const val = Number(s);
+    if (!Number.isFinite(val) || val < 0.001 || val > 999.999) return false;
+    return true;
+  }
+
+  function normalizeWeightTo3(s) {
+    s = (s || "").trim();
+    if (!s) return "";
+    if (s.startsWith(".")) s = "0" + s;
+    if (s.endsWith(".")) s = s.slice(0, -1);
+    const val = Number(s);
+    if (!Number.isFinite(val)) return "";
+    return val.toFixed(3);
+  }
+
+  function showWeightError(show) {
+    weightError.style.display = show ? "block" : "none";
+  }
+
+  function filterWeightInput(raw) {
+    raw = raw.replace(/[^\d.]/g, "");
+    const firstDot = raw.indexOf(".");
+    if (firstDot !== -1) {
+      raw = raw.slice(0, firstDot + 1) + raw.slice(firstDot + 1).replace(/\./g, "");
+    }
+    const parts = raw.split(".");
+    if (parts[0].length > 3) parts[0] = parts[0].slice(0, 3);
+    if (parts.length === 2) parts[1] = parts[1].slice(0, 3);
+    return parts.join(".");
+  }
+
+  // Event Listeners
+  karat.addEventListener("change", () => {
+    handleKaratChange();
+    updatePrice();
+  });
+
+  weight.addEventListener("input", () => {
+    const cleaned = filterWeightInput(weight.value);
+    if (cleaned !== weight.value) weight.value = cleaned;
+    updatePrice();
+  });
+
+  weight.addEventListener("blur", () => {
+    const s = weight.value.trim();
+    if (!s) {
+      showWeightError(false);
+      updatePrice();
+      return;
+    }
+    if (isValidWeightFinal(s)) {
+      weight.value = normalizeWeightTo3(s);
+      showWeightError(false);
+    } else {
+      showWeightError(true);
+    }
+    updatePrice();
+  });
+
+  makingType.addEventListener("change", updatePrice);
+  coin.addEventListener("change", updatePrice);
+  refreshBtn.addEventListener("click", updatePrice);
+
+  // Init
+  handleKaratChange();
+  updatePrice(); // Initial fetch
+</script>
+</body>
+</html>
