@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+html,
+body {
+    min-height: 100%;
+    background-color: #fdf8f0;
+    background-image:
+        radial-gradient(circle at 100% 0%, rgba(77, 22, 22, 0.02), transparent 40%),
+        radial-gradient(circle at 0% 100%, rgba(212, 175, 55, 0.03), transparent 40%);
+}
+
+.rectangular-tab {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 1.75rem;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 0 20px rgba(0, 0, 0, 0.02);
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 0;
+}
+
+.maroon-header {
+    background: #4d1616;
+    margin: 0.75rem 1.5rem 0.25rem;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.premium-input {
+    width: 100%;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    appearance: none;
+    color: #1e293b;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.01);
+}
+
+.premium-input:focus {
+    border-color: #4d1616;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(77, 22, 22, 0.08);
+    outline: none;
+}
+
+.result-container {
+    background: linear-gradient(135deg, #fefce8 0%, #f5e2a1 100%);
+    border-radius: 1.25rem;
+    padding: 1.25rem 0.75rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.15), 0 4px 10px -5px rgba(212, 175, 55, 0.1);
+}
+
+/* Hide spinners for Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide spinners for Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
